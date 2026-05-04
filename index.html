@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>소년이 온다 — 광주 문학기행</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #162318;
+    --bg2:      #1a2a1c;
+    --bg3:      #1e3020;
+    --border:   #2e3d28;
+    --gold:     #c8a96e;
+    --gold-dim: #8a6f3e;
+    --cream:    #f0ead8;
+    --muted:    #8a9180;
+    --muted2:   #5a6352;
+    --white:    #f7f3e8;
+    --flower:   rgba(255,255,255,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    background: #162318;
+  }
+
+  body {
+    background: #162318;
+    color: var(--cream);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── 안개꽃 배경 텍스처 (SVG 인라인) ── */
+
+
+  /* ── 표지 ── */
+  #cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2.5rem 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cover-frame {
+    border: 1px solid var(--gold-dim);
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #162318;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0,0,0,0.6);
+  }
+  /* 네 모서리 장식 */
+  .cover-frame::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(200,169,110,0.12);
+    pointer-events: none;
+  }
+  .corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.7;
+  }
+  .corner-tl { top: -1px;  left: -1px;  border-width: 2px 0 0 2px; }
+  .corner-tr { top: -1px;  right: -1px; border-width: 2px 2px 0 0; }
+  .corner-bl { bottom: -1px; left: -1px;  border-width: 0 0 2px 2px; }
+  .corner-br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+  .cover-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--gold-dim);
+    margin-bottom: 1.8rem;
+  }
+
+  .cover-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.15;
+    text-align: center;
+    color: var(--white);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+  }
+
+  .cover-author {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 0.85rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.2em;
+    margin-bottom: 1.8rem;
+  }
+
+  .cover-divider {
+    width: 24px;
+    height: 1px;
+    background: var(--gold-dim);
+    margin: 0 auto 1.8rem;
+  }
+
+  .cover-desc {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 2;
+    letter-spacing: 0.04em;
+    margin-bottom: 2rem;
+  }
+
+  /* 이름·학번 입력 */
+  .cover-inputs { width: 100%; }
+
+  .input-row {
+    margin-bottom: 1rem;
+  }
+  .input-row label {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .input-row input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--cream);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1rem;
+    padding: 0.4rem 0;
+    outline: none;
+    text-align: center;
+    letter-spacing: 0.1em;
+    transition: border-color 0.2s;
+  }
+  .input-row input:focus { border-bottom-color: var(--gold-dim); }
+
+  .cover-error {
+    font-size: 0.72rem;
+    color: var(--gold);
+    text-align: center;
+    margin-top: 0.5rem;
+    min-height: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  .cover-btn {
+    width: 100%;
+    margin-top: 1.2rem;
+    padding: 0.85rem;
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .cover-btn:hover {
+    background: rgba(200,169,110,0.12);
+    border-color: var(--gold);
+  }
+
+  /* ── 앱 ── */
+  #app { display: none; position: relative; z-index: 1; background: var(--bg); min-height: 100vh; }
+
+  .phase-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(14,21,16,0.95);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    backdrop-filter: none;
+  }
+  .phase-nav::-webkit-scrollbar { display: none; }
+
+  .phase-tab {
+    flex-shrink: 0;
+    padding: 0.95rem 1.1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--muted2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    background: none;
+    border-left: none; border-right: none; border-top: none;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 400;
+  }
+  .phase-tab.active { color: var(--gold); border-bottom-color: var(--gold-dim); }
+  .phase-tab.done::after { content: ' ✓'; color: var(--gold-dim); font-size: 0.58rem; }
+
+  /* ── 섹션 ── */
+  .section { display: none; padding: 2rem 1.4rem 5rem; max-width: 640px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  .section-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    color: var(--gold-dim);
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+    color: var(--white);
+  }
+  .section-intro {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.95;
+    margin-bottom: 2rem;
+    border-left: 2px solid var(--gold-dim);
+    padding-left: 1rem;
+  }
+
+  /* ── 카드 ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+  .card-number {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    margin-bottom: 0.6rem;
+  }
+
+  .card-connection {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.85;
+    margin-bottom: 1.4rem;
+    padding: 0.9rem;
+    background: var(--bg);
+    border-left: 2px solid var(--gold-dim);
+    text-align: justify;
+  }
+  .card-connection strong { color: var(--cream); font-weight: 400; }
+
+  /* 질문 태그 */
+  .q-tag {
+    display: inline-block;
+    font-size: 0.56rem;
+    letter-spacing: 0.12em;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid;
+    margin-bottom: 0.5rem;
+    margin-right: 0.3rem;
+  }
+  .q-tag.observe   { color: #7a9e7e; border-color: #7a9e7e; }
+  .q-tag.interpret { color: #9e9a6a; border-color: #9e9a6a; }
+  .q-tag.extend    { color: #7a8e9e; border-color: #7a8e9e; }
+  .q-tag.post      { color: var(--gold-dim); border-color: var(--gold-dim); }
+
+  .card-question {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 0.95rem;
+    color: var(--white);
+    line-height: 1.75;
+    margin-bottom: 0.7rem;
+    text-align: justify;
+  }
+  .card-hint {
+    font-size: 0.7rem;
+    color: var(--muted2);
+    line-height: 1.7;
+    margin-bottom: 0.8rem;
+    padding-left: 0.7rem;
+    border-left: 1px solid var(--border);
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 300;
+    line-height: 1.85;
+    padding: 0.8rem;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    min-height: 80px;
+  }
+  textarea:focus { border-color: var(--gold-dim); }
+  textarea::placeholder { color: #2e3d28; }
+
+  .char-count {
+    text-align: right;
+    font-size: 0.62rem;
+    color: var(--muted2);
+    margin-top: 0.3rem;
+  }
+  .char-count.warn { color: var(--gold); }
+
+  /* 저장 버튼 */
+  .save-btn {
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: all 0.2s;
+  }
+  .save-btn:hover { background: rgba(200,169,110,0.1); border-color: var(--gold); }
+  .save-btn:disabled { border-color: var(--border); color: var(--muted2); cursor: default; }
+
+  .saved-msg {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.1em;
+    margin-top: 0.5rem;
+    height: 1.2rem;
+  }
+
+  /* 자동저장 표시 */
+  .autosave-bar {
+    height: 1.2rem;
+    text-align: right;
+    font-size: 0.62rem;
+    color: var(--muted2);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* 기행 후 — 나의 질문 불러오기 */
+  .recall-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--gold-dim);
+    padding: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  .recall-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    margin-bottom: 0.5rem;
+  }
+  .recall-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.75;
+    font-style: italic;
+  }
+  .recall-empty { color: var(--muted2); font-style: normal; font-size: 0.78rem; }
+
+  /* 완료 */
+  .complete-screen {
+    text-align: center;
+    padding: 3rem 1rem 1rem;
+    display: none;
+  }
+  .complete-ornament {
+    font-family: 'Noto Serif KR', serif;
+    color: var(--gold-dim);
+    font-size: 1.2rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 1.5rem;
+  }
+  .complete-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--white);
+  }
+  .complete-body {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 2.3;
+  }
+  .complete-tag {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    border: 1px solid var(--gold-dim);
+    padding: 0.2rem 0.7rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- 표지 -->
+<div id="cover">
+  <div class="cover-frame">
+    <span class="corner corner-tl"></span>
+    <span class="corner corner-tr"></span>
+    <span class="corner corner-bl"></span>
+    <span class="corner corner-br"></span>
+    <div class="cover-label">광주 문학기행</div>
+    <div class="cover-title">소년이 온다</div>
+    <div class="cover-author">한강</div>
+    <div class="cover-divider"></div>
+    <div class="cover-desc">
+      이 여정은 하나의 질문에서 시작합니다.<br>
+      답을 찾기 위해서가 아니라,<br>
+      질문의 끝에 다다르기 위해서.
+    </div>
+    <div class="cover-inputs">
+      <div class="input-row">
+        <label>학번</label>
+        <input type="text" id="student-id" placeholder="1101" maxlength="4" inputmode="numeric" />
+      </div>
+      <div class="input-row">
+        <label>이름</label>
+        <input type="text" id="student-name" placeholder="홍길동" maxlength="10" />
+      </div>
+      <div class="cover-error" id="name-error"></div>
+      <button class="cover-btn" onclick="startApp()">기행 시작하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 앱 -->
+<div id="app">
+  <nav class="phase-nav">
+    <button class="phase-tab active" id="tab-s1"   onclick="showSection('s1')">① 기록관</button>
+    <button class="phase-tab"        id="tab-s2"   onclick="showSection('s2')">② 도청·광장</button>
+    <button class="phase-tab"        id="tab-s3"   onclick="showSection('s3')">③ 소년의 서</button>
+    <button class="phase-tab"        id="tab-s4"   onclick="showSection('s4')">④ 민주묘지</button>
+    <button class="phase-tab"        id="tab-post" onclick="showSection('post')">마무리</button>
+  </nav>
+
+  <!-- ── 장소 1: 기록관 ── -->
+  <div id="s1" class="section active">
+    <div class="autosave-bar" id="autosave-msg"></div>
+    <div class="section-label">기행 중 — 첫 번째 장소</div>
+    <div class="section-title">5·18민주화운동기록관</div>
+
+    <div class="card-connection">
+      이곳의 사진과 문서와 증언도, 소설 「소년이 온다」도 모두 46년 전 하나의 사건을 기록하고 있습니다.
+    </div>
+    <div class="card">
+      <div class="card-question">기록관에서 가장 오래 멈춰서 바라본 것은 무엇인가요? 그것을 보며 떠오른 소설 속 장면이나 문장은 무엇이고, 그 이유는 무엇인가요?</div>
+      <textarea id="s1_q1" rows="6" placeholder="자유롭게 써 보세요." oninput="autoSave()"></textarea>
+      <div class="char-count" id="s1_q1_count">0자</div>
+    </div>
+
+    <button class="save-btn" onclick="save('s1')">저장하고 다음 장소로</button>
+    <div class="saved-msg" id="s1-saved"></div>
+  </div>
+
+  <!-- ── 장소 2: 도청 ── -->
+  <div id="s2" class="section">
+    <div class="autosave-bar" id="autosave-msg2"></div>
+    <div class="section-label">기행 중 — 두 번째 장소</div>
+    <div class="section-title">옛 전남도청<br>5·18민주광장</div>
+
+    <div class="card-connection">
+      동호는 살 수 있었지만 이 자리를 떠나지 않았습니다. 소설은 그 이유를 설명하지 않습니다.
+    </div>
+    <div class="card">
+      <div class="card-question">동호가 떠나지 않은 이유는 무엇이라고 생각하나요? 그날 내가 이 공간에 있었다면, 나는 어떤 선택을 하게 되었을까요?</div>
+      <textarea id="s2_q1" rows="6" placeholder="자유롭게 써 보세요." oninput="autoSave()"></textarea>
+      <div class="char-count" id="s2_q1_count">0자</div>
+    </div>
+
+    <button class="save-btn" onclick="save('s2')">저장하고 다음 장소로</button>
+    <div class="saved-msg" id="s2-saved"></div>
+  </div>
+
+  <!-- ── 장소 3: 소년의 서 ── -->
+  <div id="s3" class="section">
+    <div class="autosave-bar" id="autosave-msg3"></div>
+    <div class="section-label">기행 중 — 세 번째 장소</div>
+    <div class="section-title">소년의 서</div>
+
+    <div class="card-connection">
+      이 서점의 이름은 완성되지 않은 것, 소외되고 고립된 것, 해결되지 않은 일들에 대해 생각하고 싶다는 책방지기의 마음에서 왔습니다. 그 이름이 오늘 우리가 읽은 소설, 그리고 이 기행과 어떻게 닿아 있는지 생각해 보세요.
+    </div>
+    <div class="card">
+      <div class="card-question">이 서점에서 눈에 들어온 책의 제목은 무엇인가요? 왜 그 책이 눈에 들어왔나요?</div>
+      <textarea id="s3_q1" rows="6" placeholder="자유롭게 써 보세요." oninput="autoSave()"></textarea>
+      <div class="char-count" id="s3_q1_count">0자</div>
+    </div>
+
+    <button class="save-btn" onclick="save('s3')">저장하고 다음 장소로</button>
+    <div class="saved-msg" id="s3-saved"></div>
+  </div>
+
+  <!-- ── 장소 4: 민주묘지 ── -->
+  <div id="s4" class="section">
+    <div class="autosave-bar" id="autosave-msg4"></div>
+    <div class="section-label">기행 중 — 네 번째 장소</div>
+    <div class="section-title">국립5·18민주묘지</div>
+
+    <div class="card-connection">
+      소설 주인공 동호의 실존 인물로 알려진 문재학 열사의 묘비가 이곳에 있습니다. 한강은 실제 인물에게 동호라는 이름을 붙여 소설로 썼고, 이 묘지는 그의 실제 이름을 돌에 새겼습니다.
+    </div>
+    <div class="card">
+      <div class="card-question">나에게 이름을 부른다는 것, 그리고 기억한다는 것이 갖는 의미는 무엇인가요?</div>
+      <textarea id="s4_q1" rows="6" placeholder="자유롭게 써 보세요." oninput="autoSave()"></textarea>
+      <div class="char-count" id="s4_q1_count">0자</div>
+    </div>
+
+    <button class="save-btn" onclick="save('s4')">저장하고 마무리로</button>
+    <div class="saved-msg" id="s4-saved"></div>
+  </div>
+
+  <!-- ── 마무리 ── -->
+  <div id="post" class="section">
+    <div class="autosave-bar" id="autosave-msg5"></div>
+    <div class="section-label">기행 후 — 마무리</div>
+    <div class="section-title">질문에 답하기</div>
+
+    <div class="card">
+      <div class="card-question">기행 전 패들렛에 기록한 나의 질문을 여기에 옮겨 적어 보세요.</div>
+      <textarea id="post_q0" rows="2" placeholder="기행 전 내가 만든 질문을 써 보세요." oninput="autoSave(); updateRecall()"></textarea>
+    </div>
+
+    <div class="recall-box">
+      <div class="recall-label">내가 품었던 질문</div>
+      <div id="recall-text" class="recall-text recall-empty">위 칸에 기행 전 질문을 옮겨 적으면 여기에 표시됩니다.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-question">그 질문에 오늘 기행은 어떻게 답했나요? 답이 생겼다면 어느 장소에서 무엇이 그 답을 만들었는지, 아직 답이 없다면 질문이 어떻게 달라졌는지 써 보세요.</div>
+      <textarea id="post_q1" rows="5" placeholder="자유롭게 써 보세요." oninput="autoSave()"></textarea>
+      <div class="char-count" id="post_q1_count">0자</div>
+    </div>
+
+    <div class="card">
+      <div class="card-question">오늘 기행을 통해 새롭게 생긴 질문이 있나요? 아직 답을 모르는 질문 하나를 써 보세요.</div>
+      <textarea id="post_q2" rows="3" placeholder="자유롭게 써 보세요." oninput="autoSave()"></textarea>
+      <div class="char-count" id="post_q2_count">0자</div>
+    </div>
+
+    <div class="card">
+      <div class="card-question">오늘의 기행을 한 문장으로 정리해 보세요.</div>
+      <textarea id="post_q3" rows="2" placeholder="한 문장으로 써 보세요." oninput="autoSave()"></textarea>
+      <div class="char-count" id="post_q3_count">0자</div>
+    </div>
+
+    <button class="save-btn" id="submit-btn" onclick="submitAll()">기행 기록 완성하기</button>
+    <div class="saved-msg" id="post-saved"></div>
+
+    <div class="complete-screen" id="complete">
+      <div class="complete-ornament">✦ ✦ ✦</div>
+      <div class="complete-title">기록이 완성되었습니다.</div>
+      <div class="complete-tag">제출 완료</div>
+    </div>
+  </div>
+</div>
+
+<footer style="position:fixed; bottom:0; left:0; right:0; text-align:center; padding: 0.6rem 0; font-family:'Noto Sans KR',sans-serif; font-size:0.65rem; color:#3a4f35; letter-spacing:0.15em; background: var(--bg); border-top: 1px solid #1e2e1a; z-index:50;">
+  고흥고등학교
+</footer>
+
+<script>
+
+  let studentName = '';
+  let studentId   = '';
+  let saveTimer   = null;
+  const STORAGE_KEY_PREFIX = 'literary_tour_';
+  const TEXT_IDS = [
+    's1_q1','s2_q1','s3_q1','s4_q1',
+    'post_q0','post_q1','post_q2','post_q3'
+  ];
+
+  /* ── 표지: 시작 ── */
+  function startApp() {
+    const idInput   = document.getElementById('student-id').value.trim();
+    const nameInput = document.getElementById('student-name').value.trim();
+    const errorEl   = document.getElementById('name-error');
+    if (!idInput || idInput.length !== 4 || !/^\d{4}$/.test(idInput)) {
+      errorEl.textContent = '학번을 입력해 주세요.';
+      return;
+    }
+    if (!nameInput) {
+      errorEl.textContent = '이름을 입력해 주세요.';
+      return;
+    }
+    errorEl.textContent = '';
+    studentId   = idInput;
+    studentName = nameInput;
+    document.getElementById('cover').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadFromStorage();
+  }
+
+  document.getElementById('student-id').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('student-name').focus();
+  });
+  document.getElementById('student-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startApp();
+  });
+
+  /* ── 탭 전환 ── */
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('tab-' + id).classList.add('active');
+    window.scrollTo(0, 0);
+    updateCharCounts();
+  }
+
+  /* ── localStorage 저장 ── */
+  function storageKey() {
+    return STORAGE_KEY_PREFIX + studentId + '_' + studentName;
+  }
+
+  function autoSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      const data = {};
+      TEXT_IDS.forEach(id => {
+        data[id] = document.getElementById(id).value;
+      });
+      try {
+        localStorage.setItem(storageKey(), JSON.stringify(data));
+        showAutosaveMsg();
+      } catch(e) {}
+    }, 800);
+    updateCharCounts();
+  }
+
+  function showAutosaveMsg() {
+    ['autosave-msg','autosave-msg2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = '자동 저장됨';
+        setTimeout(() => { if(el) el.textContent = ''; }, 1500);
+      }
+    });
+  }
+
+  function loadFromStorage() {
+    try {
+      const saved = localStorage.getItem(storageKey());
+      if (!saved) return;
+      const data = JSON.parse(saved);
+      TEXT_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && data[id]) el.value = data[id];
+      });
+      updateCharCounts();
+      updateRecall();
+    } catch(e) {}
+  }
+
+  /* ── 글자 수 ── */
+  function updateCharCounts() {
+    TEXT_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      const countEl = document.getElementById(id + '_count');
+      if (el && countEl) {
+        const len = el.value.length;
+        countEl.textContent = len + '자';
+        countEl.classList.toggle('warn', len > 500);
+      }
+    });
+  }
+
+  /* ── recall 박스 실시간 반영 ── */
+  function updateRecall() {
+    const val = document.getElementById('post_q0').value.trim();
+    const el  = document.getElementById('recall-text');
+    if (val) {
+      el.classList.remove('recall-empty');
+      el.textContent = val;
+    } else {
+      el.classList.add('recall-empty');
+      el.textContent = '위 칸에 기행 전 질문을 옮겨 적으면 여기에 표시됩니다.';
+    }
+  }
+
+  /* ── 섹션 저장 버튼 ── */
+  function save(section) {
+    // 해당 섹션의 textarea 비어있는지 체크
+    const sectionEl = document.getElementById(section);
+    const textareas = sectionEl.querySelectorAll('textarea');
+    for (const ta of textareas) {
+      if (!ta.value.trim()) {
+        ta.style.borderColor = 'var(--gold)';
+        ta.focus();
+        const msgEl = document.getElementById(section + '-saved');
+        msgEl.textContent = '✏️  답변을 입력해 주세요.';
+        setTimeout(() => {
+          msgEl.textContent = '';
+          ta.style.borderColor = '';
+        }, 2000);
+        return;
+      }
+    }
+    autoSave();
+    const tab = document.getElementById('tab-' + section);
+    tab.classList.add('done');
+    const msgEl = document.getElementById(section + '-saved');
+    msgEl.textContent = '✓  저장되었습니다';
+    setTimeout(() => {
+      msgEl.textContent = '';
+      const order = ['s1','s2','s3','s4','post'];
+      const next = order[order.indexOf(section) + 1];
+      if (next) showSection(next);
+    }, 600);
+  }
+
+  /* ── 최종 제출 ── */
+  function collectAllData() {
+    const data = { id: studentId, name: studentName, timestamp: new Date().toLocaleString('ko-KR') };
+    TEXT_IDS.forEach(id => { data[id] = document.getElementById(id).value; });
+    return data;
+  }
+
+  function submitAll() {
+    const data = collectAllData();
+    const btn  = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = '제출 중...';
+
+    // ── 구글 폼 연동 지점 ──
+    // FORM_ACTION_URL과 entry ID를 실제 값으로 교체하세요.
+    const FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSciN23uX7HnCr6S5S_iRVJY18GZT_yxNtPdXK1w2epi4qlDmQ/formResponse';
+    const formData = new FormData();
+    formData.append('entry.970055279',  data.id);
+    formData.append('entry.2065266887', data.name);
+    formData.append('entry.828771944',  data.s1_q1);
+    formData.append('entry.1197298147', data.s2_q1);
+    formData.append('entry.183771310',  data.s3_q1);
+    formData.append('entry.1110964750', data.s4_q1);
+    formData.append('entry.663655837',  data.post_q0);
+    formData.append('entry.1010626745', data.post_q1);
+    formData.append('entry.714494544',  data.post_q2);
+    formData.append('entry.189065203',  data.post_q3);
+
+    fetch(FORM_ACTION_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    }).then(() => showComplete())
+      .catch(() => showComplete());
+  }
+
+  function showComplete() {
+    // 제출 완료 후 localStorage 삭제
+    try { localStorage.removeItem(storageKey()); } catch(e) {}
+    document.getElementById('post-saved').textContent = '✓  제출 완료';
+    document.getElementById('complete').style.display = 'block';
+    document.getElementById('submit-btn').textContent = '제출 완료';
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+</script>
+</body>
+</html>
