@@ -41,7 +41,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .lg input:focus{border-color:var(--acc);}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
 input[type=number]{-moz-appearance:textfield;}
-.lbtn{padding:15px;background:var(--acc);color:#fff;border:none;border-radius:10px;font-size:16px;font-family:var(--sans);font-weight:500;cursor:pointer;}
+.lbtn{padding:15px;background:var(--acc);color:#fff;border:none;border-radius:10px;font-size:16px;font-family:var(--sans);font-weight:500;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0.1);}
 .lnote{font-size:12px;color:var(--tx3);text-align:center;}
 
 #scr-list{background:var(--bg);}
@@ -325,7 +325,9 @@ function doLogin(){
   document.getElementById('scr-list').classList.remove('off');
   buildCards();
 }
-document.getElementById('btn-login').onclick=doLogin;
+const _btnLogin=document.getElementById('btn-login');
+_btnLogin.addEventListener('click',doLogin);
+_btnLogin.addEventListener('touchend',function(e){e.preventDefault();doLogin();});
 document.getElementById('inp-name').onkeydown=e=>{if(e.key==='Enter')doLogin();};
 
 // ── CARDS ──
